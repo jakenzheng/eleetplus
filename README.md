@@ -1,4 +1,4 @@
-<h1 align="center"><b>Better ChatGPT</b></h1>
+<h1 align="center"><b>Eleet+ GPT</b></h1>
 
 <p align="center">
    English Version |
