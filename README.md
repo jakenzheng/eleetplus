@@ -1,14 +1,7 @@
 <h1 align="center"><b>Eleet+ GPT</b></h1>
 
 <p align="center">
-   English Version |
-   <a href="README-zh_CN.md">
-      简体中文版
-   </a>
-</p>
-
-<p align="center">
-    <a href="https://bettergpt.chat" target="_blank"><img src="public/apple-touch-icon.png" alt="Better ChatGPT" width="100" /></a>
+    <a href="https://bettergpt.chat" target="_blank"><img src="public/apple-touch-icon.png" alt="Eleet+ GPT" width="100" /></a>
 </p>
 
 <h4 align="center"><b>Free, Powerful, Limitless, Intelligent, Engaging</b></h4>
@@ -97,17 +90,11 @@ Download the desktop app [here](https://github.com/ztjhz/BetterChatGPT/releases)
 ### Features:
 
 - Unlimited local storage
-- Runs locally (access Better ChatGPT even if the website is not accessible)
+- Runs locally (access Eleet+ even if the website is not accessible)
 
 # 🛫 Host your own Instance
 
-If you'd like to run your own instance of Better ChatGPT, you can easily do so by following these steps:
-
-## Vercel
-
-One click deploy with Vercel
-
-[![Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fztjhz%2FBetterChatGPT)
+If you'd like to run your own instance of Eleet+ GPT, you can easily do so by following these steps:
 
 ## GitHub Pages
 
@@ -167,36 +154,3 @@ One click deploy with Vercel
    ```
    docker compose down
    ```
-
-# ⭐️ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=ztjhz/BetterChatGPT&type=Date)](https://github.com/ztjhz/BetterChatGPT/stargazers)
-
-<h3 align="center">
-A ⭐️ to <b>Better ChatGPT</b> is to make it shine brighter and benefit more people.
-</h3>
-
-# ❤️ Contributors
-
-Thanks to all the contributors!
-
-<a href="https://github.com/ztjhz/BetterChatGPT/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=ztjhz/BetterChatGPT" />
-</a>
-
-# 🙏 Support
-
-At Better ChatGPT, we strive to provide you with useful and amazing features around the clock. And just like any project, your support and motivation will be instrumental in helping us keep moving forward!
-
-If you have enjoyed using our app, we kindly ask you to give this project a ⭐️. Your endorsement means a lot to us and encourages us to work harder towards delivering the best possible experience.
-
-If you would like to support the team, consider sponsoring us through one of the methods below. Every contribution, no matter how small, helps us to maintain and improve our service.
-
-| Payment Method | Link                                                                                                                                                 |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GitHub         | [![GitHub Sponsor](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/ztjhz) |
-| KoFi           | [![support](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/betterchatgpt)                                                             |
-| Alipay (Ayaka) | <img src="https://ayaka14732.github.io/sponsor/alipay.jpg" width=150 />                                                                              |
-| Wechat (Ayaka) | <img src="https://ayaka14732.github.io/sponsor/wechat.png" width=150 />                                                                              |
-
-Thank you for being a part of our community, and we look forward to serving you better in the future.
