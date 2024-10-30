@@ -6,22 +6,11 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
-    <meta property="og:image" content="https://raw.githubusercontent.com/jakenzheng/eleetplus/refs/heads/main/public/apple-touch-icon.png" />
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/jakenzheng/eleetplus/refs/heads/main/public/apple-touch-icon.png" />
-    <meta
-      name="description"
-      content="Learn more easily and efficiently with Eleet+"
-    />
-    <meta
-      name="twitter:description"
-      content="Learn more easily and efficiently with Eleet+"
-    >
-    <meta name="twitter:title" content="Eleet+" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <title>Eleet+</title>
+    <title>Eleet+ Google OAuth with Magic</title>
 
-    <!-- Google OAuth Library -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Magic Library -->
+    <script src="https://auth.magic.link/sdk"></script>
+    <script src="https://auth.magic.link/sdk/extension/oauth"></script>
 
     <!-- Inline styling for layout and popup -->
     <style>
@@ -34,7 +23,7 @@
         margin: 0;
         background-color: #f0f0f0;
       }
-      
+
       #app {
         text-align: center;
         padding: 20px;
@@ -58,64 +47,67 @@
       }
     </style>
   </head>
-  
-  <body>
+
+  <body onload="render()">
     <div id="app">
       <h2>Welcome to Eleet+</h2>
       <p>Please continue with Google to proceed.</p>
 
       <!-- Google Sign-In Button -->
-      <div id="g_id_onload"
-           data-client_id="431712106692-irl94o6qfko7b8voaa8ofc1tsic7o086.apps.googleusercontent.com"
-           data-callback="handleCredentialResponse"
-           data-ux_mode="redirect"
-           data-login_uri="https://eleetplus.vercel.app/auth/google/callback">
-      </div>
-      <div class="g_id_signin"
-           data-type="standard"
-           data-shape="rectangular"
-           data-theme="outline"
-           data-text="continue_with"
-           data-size="large"
-           data-logo_alignment="left">
-      </div>
+      <button onclick="handleLogin()" id="btn-login" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">
+        Continue with Google
+      </button>
 
       <!-- Success Popup -->
       <div id="success-popup">Login was successful! Redirecting...</div>
     </div>
 
     <script>
+      const MAGIC_API_KEY = "431712106692-irl94o6qfko7b8voaa8ofc1tsic7o086.apps.googleusercontent.com";
+
+      // Initialize Magic with OAuth extension
+      const magic = new Magic(MAGIC_API_KEY, {
+        extensions: [new MagicOAuthExtension()],
+      });
+
+      // Render function to show content based on path
+      const render = async () => {
+        if (window.location.pathname === "/callback") {
+          try {
+            // Retrieve the OAuth result from Magic
+            const result = await magic.oauth.getRedirectResult();
+            const profile = JSON.stringify(result.oauth.userInfo, undefined, 2);
+
+            // Show success message and redirect to test.html
+            showSuccessPopup();
+          } catch (error) {
+            console.error("Error retrieving Magic OAuth result:", error);
+            window.location.href = window.location.origin;
+          }
+        }
+      };
+
+      // Function to start the OAuth login flow
+      const handleLogin = async () => {
+        const btnLogin = document.getElementById("btn-login");
+        btnLogin.disabled = true;
+        btnLogin.innerText = "Logging in...";
+
+        await magic.oauth.loginWithRedirect({
+          provider: "google",
+          redirectURI: `${window.location.origin}/callback`
+        });
+      };
+
+      // Show the success popup and redirect to test.html after a delay
       function showSuccessPopup() {
         const popup = document.getElementById("success-popup");
         popup.style.display = "block";
-        
-        // Hide popup and redirect after 2 seconds
+
         setTimeout(() => {
           popup.style.display = "none";
-          window.location.href = '/test.html';  // Redirect to test.html after login
+          window.location.href = "/test.html";
         }, 2000);
-      }
-
-      // Function to handle Google credential response
-      function handleCredentialResponse(response) {
-        const token = response.credential;
-
-        // Send token to backend for verification
-        fetch('/auth/google/callback', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_token: token })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            showSuccessPopup();
-          } else {
-            console.error("Authentication failed", data.message);
-            alert("Login failed. Please try again.");
-          }
-        })
-        .catch(err => console.error("Error during authentication", err));
       }
     </script>
   </body>
