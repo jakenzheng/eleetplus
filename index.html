@@ -1,63 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Simple Google Sign-In</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <meta property="og:image" content="https://raw.githubusercontent.com/jakenzheng/eleetplus/refs/heads/main/public/apple-touch-icon.png" />
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/jakenzheng/eleetplus/refs/heads/main/public/apple-touch-icon.png" />
+    <meta
+      name="description"
+      content="Play and chat smarter with BetterChatGPT - an amazing open-source web app with a better UI for exploring OpenAI's ChatGPT API!"
+    />
+    <meta
+      name="twitter:description"
+      content="Play and chat smarter with BetterChatGPT - an amazing open-source web app with a better UI for exploring OpenAI's ChatGPT API!"
+    />
+    <meta name="twitter:title" content="Eleet+" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>Eleet+</title>
 
-  <!-- Google Sign-In -->
-  <meta name="google-signin-client_id" content="431712106692-18prk539phso8m7rmtbd98ce6mop21rm.apps.googleusercontent.com">
-  <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <!-- Google OAuth Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f0f0f0;
-    }
+    <!-- Simple styling for popup message -->
+    <style>
+      #success-popup {
+        display: none;
+        position: fixed;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #4CAF50;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        font-size: 18px;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <div id="root"></div>
+    <div id="modal-root"></div>
 
-    #app {
-      text-align: center;
-      padding: 20px;
-      border-radius: 8px;
-      background-color: #fff;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-  </style>
-</head>
-
-<body>
-  <div id="app">
-    <h2>Welcome! Please sign in with Google</h2>
     <!-- Google Sign-In Button -->
-    <div class="g-signin2" data-onsuccess="onSignIn"></div>
-  </div>
+    <div id="g_id_onload"
+         data-client_id="431712106692-irl94o6qfko7b8voaa8ofc1tsic7o086.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-ux_mode="redirect"
+         data-login_uri="https://your-site-name.vercel.app/auth/google/callback">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="sign_in_with"
+         data-size="large"
+         data-logo_alignment="left">
+    </div>
 
-  <script>
-    function onSignIn(googleUser) {
-      // Get the Google profile information
-      const profile = googleUser.getBasicProfile();
-      console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-      console.log('Name: ' + profile.getName());
-      console.log('Image URL: ' + profile.getImageUrl());
-      console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+    <!-- Success Popup -->
+    <div id="success-popup">Login was successful!</div>
 
-      // Redirect to test.html upon successful sign-in
-      window.location.href = 'test.html';
-    }
+    <!-- JavaScript to handle Google OAuth -->
+    <script>
+      function showSuccessPopup() {
+        const popup = document.getElementById("success-popup");
+        popup.style.display = "block";
+        
+        // Hide popup after 2 seconds
+        setTimeout(() => {
+          popup.style.display = "none";
+          // Redirect after showing the success message
+          window.location.href = '/dashboard';
+        }, 2000);
+      }
 
-    // Optional: Function to sign out if needed
-    function signOut() {
-      const auth2 = gapi.auth2.getAuthInstance();
-      auth2.signOut().then(function () {
-        console.log('User signed out.');
-      });
-    }
-  </script>
-</body>
+      // Function to handle Google credential response
+      function handleCredentialResponse(response) {
+        const token = response.credential;
+
+        // Send token to backend for verification
+        fetch('/auth/google/callback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_token: token })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showSuccessPopup();
+          } else {
+            console.error("Authentication failed", data.message);
+          }
+        })
+        .catch(err => console.error("Error during authentication", err));
+      }
+    </script>
+
+    <!-- Your website's main script -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
-
