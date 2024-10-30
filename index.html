@@ -1,107 +1,86 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
-    <meta property="og:image" content="https://raw.githubusercontent.com/jakenzheng/eleetplus/refs/heads/main/public/apple-touch-icon.png" />
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/jakenzheng/eleetplus/refs/heads/main/public/apple-touch-icon.png" />
-    <meta
-      name="description"
-      content="Play and chat smarter with BetterChatGPT - an amazing open-source web app with a better UI for exploring OpenAI's ChatGPT API!"
-    />
-    <meta
-      name="twitter:description"
-      content="Play and chat smarter with BetterChatGPT - an amazing open-source web app with a better UI for exploring OpenAI's ChatGPT API!"
-    />
-    <meta name="twitter:title" content="Eleet+" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <title>Eleet+</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/jakenzheng/eleetplus/refs/heads/main/public/apple-touch-icon.png" />
+  <meta name="twitter:image" content="https://raw.githubusercontent.com/jakenzheng/eleetplus/refs/heads/main/public/apple-touch-icon.png" />
+  <meta
+    name="description"
+    content="Play and chat smarter with BetterChatGPT - an amazing open-source web app with a better UI for exploring OpenAI's ChatGPT API!"
+  />
+  <meta
+    name="twitter:description"
+    content="Play and chat smarter with BetterChatGPT - an amazing open-source web app with a better UI for exploring OpenAI's ChatGPT API!"
+  />
+  <meta name="twitter:title" content="Eleet+" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <title>Better ChatGPT</title>
 
-    <!-- Google OAuth Library -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Google OAuth Library -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-    <!-- Simple styling for popup message -->
-    <style>
-      #success-popup {
-        display: none;
-        position: fixed;
-        top: 20%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #4CAF50;
-        color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        font-size: 18px;
-      }
-    </style>
-  </head>
-  
-  <body>
-    <div id="root"></div>
-    <div id="modal-root"></div>
+  <!-- Simple styling for popup message -->
+  <style>
+    #success-popup {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #4CAF50;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      font-size: 18px;
+    }
+  </style>
+</head>
 
-    <!-- Google Sign-In Button -->
-    <div id="g_id_onload"
-         data-client_id="431712106692-irl94o6qfko7b8voaa8ofc1tsic7o086.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse"
-         data-ux_mode="redirect"
-         data-login_uri="https://eleetplus-3k7b4wviv-jakenzhengs-projects.vercel.app/">
-    </div>
-    <div class="g_id_signin"
-         data-type="standard"
-         data-shape="rectangular"
-         data-theme="outline"
-         data-text="sign_in_with"
-         data-size="large"
-         data-logo_alignment="left">
-    </div>
+<body>
+  <h1>Protected Content</h1>
+  <div id="root"></div>
+  <div id="modal-root"></div>
 
-    <!-- Success Popup -->
-    <div id="success-popup">Login was successful!</div>
+  <!-- Success Popup -->
+  <div id="success-popup">Login was successful!</div>
 
-    <!-- JavaScript to handle Google OAuth -->
-    <script>
-      function showSuccessPopup() {
-        const popup = document.getElementById("success-popup");
-        popup.style.display = "block";
-        
-        // Hide popup after 2 seconds
-        setTimeout(() => {
-          popup.style.display = "none";
-          // Redirect after showing the success message
-          window.location.href = '/dashboard';
-        }, 2000);
-      }
+  <script>
+    // Redirect if user is not authorized
+    fetch('/protected')
+      .then(response => {
+        if (response.status === 401) {
+          // Not authenticated; redirect to login page
+          window.location.href = '/login.html';
+        } else {
+          return response.text();
+        }
+      })
+      .then(content => {
+        document.getElementById("root").innerHTML = content;
+      })
+      .catch(err => console.error("Error accessing protected content:", err));
 
-      // Function to handle Google credential response
-      function handleCredentialResponse(response) {
-        const token = response.credential;
+    function showSuccessPopup() {
+      const popup = document.getElementById("success-popup");
+      popup.style.display = "block";
+      
+      // Hide popup after 2 seconds
+      setTimeout(() => {
+        popup.style.display = "none";
+        // Redirect after showing the success message
+        window.location.href = '/dashboard';
+      }, 2000);
+    }
+  </script>
 
-        // Send token to backend for verification
-        fetch('/auth/google/callback', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_token: token })
-        })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            showSuccessPopup();
-          } else {
-            console.error("Authentication failed", data.message);
-          }
-        })
-        .catch(err => console.error("Error during authentication", err));
-      }
-    </script>
-
-    <!-- Your website's main script -->
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <!-- Your website's main script -->
+  <script type="module" src="/src/main.tsx"></script>
+</body>
 </html>
 

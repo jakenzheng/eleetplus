@@ -1,0 +1,53 @@
+<!-- login.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <!-- Google OAuth Library -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <h1>Login to Access Protected Content</h1>
+  <div id="g_id_onload"
+       data-client_id="431712106692-irl94o6qfko7b8voaa8ofc1tsic7o086.apps.googleusercontent.com"
+       data-callback="handleCredentialResponse"
+       data-ux_mode="redirect"
+       data-login_uri="https://your-site-name.vercel.app/auth/google/callback">
+  </div>
+  <div class="g_id_signin"
+       data-type="standard"
+       data-shape="rectangular"
+       data-theme="outline"
+       data-text="sign_in_with"
+       data-size="large"
+       data-logo_alignment="left">
+  </div>
+
+  <script>
+    // Function to handle Google OAuth response
+    function handleCredentialResponse(response) {
+      const token = response.credential;
+
+      // Send token to backend for verification
+      fetch('/auth/google/callback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_token: token })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Redirect to protected page after successful login
+          window.location.href = '/index.html';
+        } else {
+          console.error("Authentication failed", data.message);
+        }
+      })
+      .catch(err => console.error("Error during authentication", err));
+    }
+  </script>
+</body>
+</html>
+
