@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
     <meta property="og:image" content="https://raw.githubusercontent.com/jakenzheng/eleetplus/refs/heads/main/public/apple-touch-icon.png" />
     <meta name="twitter:image" content="https://raw.githubusercontent.com/jakenzheng/eleetplus/refs/heads/main/public/apple-touch-icon.png" />
     <meta
@@ -18,10 +17,27 @@
     />
     <meta name="twitter:title" content="Eleet+" />
     <meta name="twitter:card" content="summary_large_image" />
-    <title>Better ChatGPT</title>
+    <title>Eleet+</title>
 
     <!-- Google OAuth Library -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- Simple styling for popup message -->
+    <style>
+      #success-popup {
+        display: none;
+        position: fixed;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #4CAF50;
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        font-size: 18px;
+      }
+    </style>
   </head>
   
   <body>
@@ -42,8 +58,23 @@
          data-logo_alignment="left">
     </div>
 
+    <!-- Success Popup -->
+    <div id="success-popup">Login was successful!</div>
+
     <!-- JavaScript to handle Google OAuth -->
     <script>
+      function showSuccessPopup() {
+        const popup = document.getElementById("success-popup");
+        popup.style.display = "block";
+        
+        // Hide popup after 2 seconds
+        setTimeout(() => {
+          popup.style.display = "none";
+          // Redirect after showing the success message
+          window.location.href = '/dashboard';
+        }, 2000);
+      }
+
       // Function to handle Google credential response
       function handleCredentialResponse(response) {
         const token = response.credential;
@@ -57,7 +88,7 @@
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            window.location.href = '/dashboard';
+            showSuccessPopup();
           } else {
             console.error("Authentication failed", data.message);
           }
