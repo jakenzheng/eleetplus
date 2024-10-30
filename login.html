@@ -1,4 +1,3 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +10,7 @@
 <body>
   <h1>Login to Access Protected Content</h1>
   <div id="g_id_onload"
-       data-client_id="process.env.GOOGLE_CLIENT_ID"
+       data-client_id="431712106692-irl94o6qfko7b8voaa8ofc1tsic7o086.apps.googleusercontent.com"
        data-callback="handleCredentialResponse"
        data-ux_mode="redirect"
        data-login_uri="https://eleetplus-jakenzhengs-projects.vercel.app/">
@@ -38,14 +37,22 @@
       })
       .then(res => res.json())
       .then(data => {
-        if (data.success) {
-          // Redirect to protected page after successful login
-          window.location.href = '/index.html';
-        } else {
-          console.error("Authentication failed", data.message);
-        }
+        // Wait for 2 seconds to confirm login success
+        setTimeout(() => {
+          if (data.success) {
+            // Redirect to protected page after successful login
+            window.location.href = '/index.html';
+          } else {
+            // If verification failed, log an error or display a message
+            console.error("Authentication failed", data.message);
+            alert("Login failed. Please try again.");
+          }
+        }, 2000);  // 2-second delay
       })
-      .catch(err => console.error("Error during authentication", err));
+      .catch(err => {
+        console.error("Error during authentication", err);
+        alert("An error occurred during login. Please try again.");
+      });
     }
   </script>
 </body>
