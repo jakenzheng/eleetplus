@@ -10,19 +10,63 @@
     <meta name="twitter:image" content="https://bettergpt.chat/social.png" />
     <meta
       name="description"
-      content="Play and chat smarter with BetterChatGPT - an amazing open-source web app with a better UI for exploring OpenAI's ChatGPT API! "
+      content="Play and chat smarter with BetterChatGPT - an amazing open-source web app with a better UI for exploring OpenAI's ChatGPT API!"
     />
     <meta
       name="twitter:description"
-      content="Play and chat smarter with BetterChatGPT - an amazing open-source web app with a better UI for exploring OpenAI's ChatGPT API! "
+      content="Play and chat smarter with BetterChatGPT - an amazing open-source web app with a better UI for exploring OpenAI's ChatGPT API!"
     />
     <meta name="twitter:title" content="Better ChatGPT" />
     <meta name="twitter:card" content="summary_large_image" />
     <title>Better ChatGPT</title>
+
+    <!-- Google OAuth Library -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
+  
   <body>
     <div id="root"></div>
     <div id="modal-root"></div>
+
+    <!-- Google Sign-In Button -->
+    <div id="g_id_onload"
+         data-client_id="YOUR_GOOGLE_CLIENT_ID"
+         data-callback="handleCredentialResponse">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="sign_in_with"
+         data-size="large"
+         data-logo_alignment="left">
+    </div>
+
+    <!-- JavaScript to handle Google OAuth -->
+    <script>
+      // Function to handle Google credential response
+      function handleCredentialResponse(response) {
+        const token = response.credential;
+
+        // Send token to backend for verification
+        fetch('/auth/google/callback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id_token: token })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            window.location.href = '/dashboard';
+          } else {
+            console.error("Authentication failed", data.message);
+          }
+        })
+        .catch(err => console.error("Error during authentication", err));
+      }
+    </script>
+
+    <!-- Your website's main script -->
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
