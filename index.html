@@ -1,62 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simple Google OAuth with Magic</title>
-  <script src="https://auth.magic.link/sdk"></script>
-  <script src="https://auth.magic.link/sdk/extension/oauth"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple Google Sign-In</title>
+
+  <!-- Google Sign-In -->
+  <meta name="google-signin-client_id" content="YOUR_GOOGLE_CLIENT_ID"> <!-- Replace with your actual Google Client ID -->
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    #app {
+      text-align: center;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  </style>
 </head>
-<body onload="render()">
-  <div id="app">Loading...</div>
+
+<body>
+  <div id="app">
+    <h2>Welcome! Please sign in with Google</h2>
+    <!-- Google Sign-In Button -->
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+  </div>
 
   <script>
-    const MAGIC_API_KEY = "pk_live_4196A5A589C7E50D";  // Replace with your actual Magic API key
+    function onSignIn(googleUser) {
+      // Get the Google profile information
+      const profile = googleUser.getBasicProfile();
+      console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+      console.log('Name: ' + profile.getName());
+      console.log('Image URL: ' + profile.getImageUrl());
+      console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
 
-    // Initialize Magic with OAuth extension
-    const magic = new Magic(MAGIC_API_KEY, {
-      extensions: [new MagicOAuthExtension()],
-    });
+      // Redirect to test.html upon successful sign-in
+      window.location.href = 'test.html';
+    }
 
-    // Function to render content based on the current path
-    const render = async () => {
-      let html = "";
-
-      // Check if we're on the callback path after login
-      if (window.location.pathname === "/callback") {
-        try {
-          // Retrieve the OAuth result from Magic
-          await magic.oauth.getRedirectResult();
-
-          // Redirect to test.html upon successful login
-          window.location.href = "/test.html";
-        } catch (error) {
-          console.error("Error retrieving Magic OAuth result:", error);
-          window.location.href = "/";  // Redirect to home if there’s an error
-        }
-      } else {
-        // Show the login button if not on the callback page
-        html = `
-          <h2>Please sign up or log in</h2>
-          <button onclick="handleLogin()" id="btn-login">Continue with Google</button>
-        `;
-      }
-
-      document.getElementById("app").innerHTML = html;
-    };
-
-    // Function to start the OAuth login flow
-    const handleLogin = async () => {
-      const btnLogin = document.getElementById("btn-login");
-      btnLogin.disabled = true;
-      btnLogin.innerText = "Logging in...";
-
-      // Start the Google OAuth 2.0 flow with Magic
-      await magic.oauth.loginWithRedirect({
-        provider: "google",
-        redirectURI: `${window.location.origin}/callback`  // Ensure this matches your Magic Dashboard and Google settings
+    // Optional: Function to sign out if needed
+    function signOut() {
+      const auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function () {
+        console.log('User signed out.');
       });
-    };
+    }
   </script>
 </body>
 </html>
