@@ -23,26 +23,8 @@
     <!-- Google OAuth Library -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-    <!-- Inline styling for layout and popup -->
+    <!-- Simple styling for popup message -->
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #f0f0f0;
-      }
-      
-      #app {
-        text-align: center;
-        padding: 20px;
-        border-radius: 8px;
-        background-color: #fff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      }
-
       #success-popup {
         display: none;
         position: fixed;
@@ -60,39 +42,39 @@
   </head>
   
   <body>
-    <div id="app">
-      <h2>Welcome to Eleet+</h2>
-      <p>Please continue with Google to proceed.</p>
+    <div id="root"></div>
+    <div id="modal-root"></div>
 
-      <!-- Google Sign-In Button -->
-      <div id="g_id_onload"
-           data-client_id="431712106692-irl94o6qfko7b8voaa8ofc1tsic7o086.apps.googleusercontent.com"
-           data-callback="handleCredentialResponse"
-           data-ux_mode="redirect"
-           data-login_uri="https://your-site-name.vercel.app/auth/google/callback">
-      </div>
-      <div class="g_id_signin"
-           data-type="standard"
-           data-shape="rectangular"
-           data-theme="outline"
-           data-text="continue_with"
-           data-size="large"
-           data-logo_alignment="left">
-      </div>
-
-      <!-- Success Popup -->
-      <div id="success-popup">Login was successful! Redirecting...</div>
+    <!-- Google Sign-In Button -->
+    <div id="g_id_onload"
+         data-client_id="431712106692-irl94o6qfko7b8voaa8ofc1tsic7o086.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse"
+         data-ux_mode="redirect"
+         data-login_uri="https://your-site-name.vercel.app/auth/google/callback">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="sign_in_with"
+         data-size="large"
+         data-logo_alignment="left">
     </div>
 
+    <!-- Success Popup -->
+    <div id="success-popup">Login was successful!</div>
+
+    <!-- JavaScript to handle Google OAuth -->
     <script>
       function showSuccessPopup() {
         const popup = document.getElementById("success-popup");
         popup.style.display = "block";
         
-        // Hide popup and redirect after 2 seconds
+        // Hide popup after 2 seconds
         setTimeout(() => {
           popup.style.display = "none";
-          window.location.href = '/test.html';  // Redirect to test.html after login
+          // Redirect after showing the success message
+          window.location.href = '/dashboard';
         }, 2000);
       }
 
@@ -112,12 +94,14 @@
             showSuccessPopup();
           } else {
             console.error("Authentication failed", data.message);
-            alert("Login failed. Please try again.");
           }
         })
         .catch(err => console.error("Error during authentication", err));
       }
     </script>
+
+    <!-- Your website's main script -->
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
 
