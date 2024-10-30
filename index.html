@@ -1,77 +1,89 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Magic / Google OAuth Demo</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" type="text/css" href="styles.css" />
-    <link
-      rel="stylesheet"
-      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/default.min.css"
-    />
-    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/highlight.min.js"></script>
-    <script src="https://auth.magic.link/sdk"></script>
-    <script src="https://auth.magic.link/sdk/extension/oauth"></script>
-    <script>
-      const MAGIC_API_KEY = "pk_live_4196A5A589C7E50D";
+<html lang="en">
+<head>
+  <title>Your Website - Google OAuth Demo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/styles/default.min.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.2/highlight.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body onload="render()">
+  <div id="app">Loading...</div>
 
-      const magic = new Magic(MAGIC_API_KEY, {
-        extensions: [new MagicOAuthExtension()],
-      });
+  <script>
+    // Global variable to hold Google OAuth client ID
+    const GOOGLE_CLIENT_ID = "431712106692-irl94o6qfko7b8voaa8ofc1tsic7o086.apps.googleusercontent.com";  // replace with your actual Google OAuth client ID
 
-      const render = async () => {
-        let html = ``;
+    // Function to render the UI based on authentication status
+    const render = async () => {
+      let html = ``;
 
-        if (window.location.pathname === "/callback") {
-          try {
-            const result = await magic.oauth.getRedirectResult();
-            const profile = JSON.stringify(result.oauth.userInfo, undefined, 2);
+      if (window.location.pathname === "/callback") {
+        try {
+          // Handle the callback from Google OAuth
+          const token = new URLSearchParams(window.location.search).get("credential");
 
+          // Send token to your backend for verification
+          const response = await fetch('/auth/google/callback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id_token: token })
+          });
+          const data = await response.json();
+
+          if (data.success) {
             html = `
-                <h1>It Worked! 🎉</h1>
-                <h2>Your User Profile:</h2>
-                <pre><code class="json tomorrow">${profile}</code></pre>
-              `;
-          } catch {
-            window.location.href = window.location.origin;
-          }
-        } else {
-          html = `
-              <h2>Please sign up or log in</h2>
-              <form onsubmit="handleLogin(event)">
-                <button id="btn-send" class="google" type="submit">
-                  <img src="./sign-in-with-google.svg" />
-                </button>
-              </form>
+              <h1>Login Successful! 🎉</h1>
+              <p>Redirecting you to the main page...</p>
             `;
+
+            // Redirect to main page after a delay
+            setTimeout(() => {
+              window.location.href = '/main';  // replace '/main' with your actual main page route
+            }, 2000);
+          } else {
+            html = `<h1>Login failed</h1><p>Please try again.</p>`;
+          }
+        } catch (error) {
+          console.error("Error during authentication:", error);
+          window.location.href = "/";
         }
+      } else {
+        // Display login form with Google sign-in button
+        html = `
+          <h2>Please sign up or log in</h2>
+          <div id="g_id_onload"
+               data-client_id="${GOOGLE_CLIENT_ID}"
+               data-callback="handleCredentialResponse"
+               data-ux_mode="redirect"
+               data-login_uri="${window.location.origin}/callback">
+          </div>
+          <div class="g_id_signin"
+               data-type="standard"
+               data-shape="rectangular"
+               data-theme="outline"
+               data-text="sign_in_with"
+               data-size="large"
+               data-logo_alignment="left">
+          </div>
+        `;
+      }
 
-        document.getElementById("app").innerHTML = html;
-        document.querySelectorAll("pre code").forEach((block) => {
-          hljs.highlightBlock(block);
-        });
-      };
+      document.getElementById("app").innerHTML = html;
+      document.querySelectorAll("pre code").forEach((block) => {
+        hljs.highlightBlock(block);
+      });
+    };
 
-      /**
-       * Starts the OAuth 2.0 login flow.
-       */
-      const handleLogin = async (e) => {
-        e.preventDefault();
-
-        // Render a button "pending" state.
-        const btnSend = document.getElementById("btn-send");
-        btnSend.disabled = true;
-        btnSend.innerText = "Logging in...";
-
-        // Start the Google OAuth 2.0 flow!
-        const didToken = await magic.oauth.loginWithRedirect({
-          provider: "google",
-          redirectURI: `${window.location.origin}/callback`
-        });
-      };
-    </script>
-  </head>
-  <body onload="render()">
-    <div id="app">Loading...</div>
-  </body>
+    // Google OAuth callback handler
+    function handleCredentialResponse(response) {
+      // Redirect to callback URL with token as a URL parameter
+      const token = response.credential;
+      window.location.href = `/callback?credential=${token}`;
+    }
+  </script>
+</body>
 </html>
+
